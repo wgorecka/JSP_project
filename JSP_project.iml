@@ -8,6 +8,7 @@
         </descriptors>
         <webroots>
           <root url="file://$MODULE_DIR$/WeronikaGorecka_JuliaMarcinkowska/paginas" relative="/" />
+          <root url="file://$MODULE_DIR$/WeronikaGorecka_JuliaMarcinkowska/basedados" relative="/WeronikaGorecka_JuliaMarcinkowska/basedados" />
         </webroots>
       </configuration>
     </facet>
@@ -20,5 +21,23 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" scope="PROVIDED" name="Tomcat 7.0.99" level="application_server_libraries" />
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../../Program Files/XAMPP/tomcat/lib/mysql-connector-java-5.1.48-bin.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../../Program Files/XAMPP/tomcat/webapps/ROOT/WEB-INF/lib/mysql-connector-java-5.1.48.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
