@@ -1,20 +1,15 @@
-<%--<?php--%>
-<%--include "../basedados/basedados.h";--%>
+<%@ page contentType="text/html; ISO-8859-1" language="java" pageEncoding="UTF-8" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
 
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
-
-<%--if (isset($_SESSION["user"]) && isset($_SESSION["type"]) && $_SESSION["type"] == 1) {--%>
-<%--    echo "Error, redirecting to client page.";--%>
-<%--    header('refresh:2; url=client_page.php');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--?>--%>
-
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else if (session.getAttribute("user") != null && session.getAttribute("type") != null && (Integer) session.getAttribute("type") != 2) {
+        out.println("Error, redirecting to employee page.");
+        response.setHeader("Refresh", "3;url=client_page.jsp");
+    } else {
+%>
 <!doctype html>
 <html lang="en">
 <head>
@@ -121,3 +116,6 @@
 </div>
 </body>
 </html>
+<%
+    }
+%>

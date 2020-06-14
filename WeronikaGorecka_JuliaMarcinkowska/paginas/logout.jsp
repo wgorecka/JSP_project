@@ -1,5 +1,6 @@
-<%--<?php--%>
-<%--session_start();--%>
-<%--session_destroy();--%>
-<%--header("refresh:0;url = ./index.html");--%>
-<%--?>--%>
+<%
+    session.removeAttribute("name");
+    session.removeAttribute("user");
+    session.invalidate();
+    response.setHeader("Refresh", "0;url=index.jsp");
+%>

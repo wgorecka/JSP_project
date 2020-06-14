@@ -1,19 +1,33 @@
-<%--<?php--%>
-<%--include "../basedados/basedados.h";--%>
+<%@ page contentType="text/html; ISO-8859-1" language="java" pageEncoding="UTF-8" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
 
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--if (isset($_SESSION["user"]) && isset($_SESSION["type"]) && $_SESSION["type"] != 1) {--%>
-<%--    echo "Error, redirecting to employee page.";--%>
-<%--    header('refresh:2; url=employee_page.jsp');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--?>--%>
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else if (session.getAttribute("user") != null && session.getAttribute("type") != null && (Integer) session.getAttribute("type") != 1) {
+        out.println("Error, redirecting to employee page.");
+        response.setHeader("Refresh", "3;url=employee_page.jsp");
+    } else {
+        int user_id = (Integer) session.getAttribute("user");
+        PreparedStatement psSelectRecord = null;
+        ResultSet rsSelectRecord = null;
+        String sqlSelectRecord = "SELECT * FROM users WHERE ID='" + user_id + "'";
 
+        assert conn != null;
+        try {
+            psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        try {
+            assert psSelectRecord != null;
+            rsSelectRecord = psSelectRecord.executeQuery();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+%>
 <!doctype html>
 <html lang="en">
 <head>
@@ -50,20 +64,23 @@
         </div>
         <div class="card-body">
             <p class="card-text">
-                <%--                <?php--%>
-                <%--                $user_id = $_SESSION["user"];--%>
-                <%--                global $conn;--%>
-                <%--                $sql = "SELECT * FROM users WHERE ID=" . $user_id;--%>
-                <%--                $retval = mysqli_query($conn, $sql);--%>
-                <%--                if (!$retval) {--%>
-                <%--                    die('Could not get data: ' . mysqli_error($conn));--%>
-                <%--                }--%>
-                <%--                $row = mysqli_fetch_array($retval);--%>
-                <%--                echo "<b>Your name:</b> " . $row["name"] . "<br>";--%>
-                <%--                echo "<b>Your email: </b>" . $row["email"] . "<br>";--%>
-                <%--                echo "<b>Your login: </b>" . $row["login"] . "<br>";--%>
-                <%--                echo "<a href='edit_data_view.jsp?user_id=" . $_SESSION["user"] . "' class='btn btn-dark mt-md-3'>Edit</a>";--%>
-                <%--                ?>--%>
+                <%
+                    while (true) {
+                        try {
+                            if (!rsSelectRecord.next()) break;
+
+                %>
+                <b>Your name:</b> <%=rsSelectRecord.getString("name")%> <br>
+                <b>Your email: </b><%=rsSelectRecord.getString("email")%> <br>
+                <b>Your login: </b><%=rsSelectRecord.getString("login")%> <br>
+                <%
+                        } catch (SQLException throwables) {
+                            throwables.printStackTrace();
+                        }
+                    }
+                    String href = "edit_data_view.jsp?user_id=" + user_id;
+                %>
+                <a href="<%=href%>" class='btn btn-dark mt-md-3'>Edit</a>
             </p>
         </div>
     </div>
@@ -86,45 +103,45 @@
                     <th>Status</th>
                     <th></th>
                 </tr>
-<%--                <?php--%>
-<%--                $sql = "SELECT * FROM tickets WHERE user_id=" . $user_id;--%>
-<%--                $retval = mysqli_query($conn, $sql);--%>
-<%--                if (!$retval) {--%>
-<%--                    die('Could not get data: ' . mysqli_error($conn));--%>
-<%--                }--%>
-<%--                while ($row = mysqli_fetch_array($retval)) {--%>
-<%--                    echo "<tr><td>" . $row["date"] . "</td>";--%>
-<%--                    $sql_c = "SELECT * FROM courses WHERE ID =" . $row["course_id"];--%>
-<%--                    $retval_c = mysqli_query($conn, $sql_c);--%>
-<%--                    if (!$retval_c) {--%>
-<%--                        die('Could not get data: ' . mysqli_error($conn));--%>
-<%--                    }--%>
-<%--                    $course = mysqli_fetch_array($retval_c);--%>
-<%--                    echo "<td>" . $course['city_from'] . "</td>";--%>
-<%--                    echo "<td>" . $course['city_to'] . "</td>";--%>
-<%--                    echo "<td>" . $course['hour_dep'] . "</td>";--%>
-<%--                    echo "<td>" . $course['hour_arr'] . "</td>";--%>
-<%--                    echo "<td>" . $row['pass_no'] . "</td>";--%>
-<%--                    switch ($row["status"]) {--%>
-<%--                        case 0:--%>
-<%--                            $status = "Reserved";--%>
-<%--                            break;--%>
-<%--                        case 1:--%>
-<%--                            $status = "Payed for";--%>
-<%--                            break;--%>
-<%--                        case -1:--%>
-<%--                            $status = "Cancelled";--%>
-<%--                            break;--%>
-<%--                    }--%>
-<%--                    echo "<td>" . $status . "</td>";--%>
-<%--                    if ($row["status"] == 0) {--%>
-<%--                        echo "<td><a href='cancel_reservation.php?ticket_id=" . $row['ID'] . "' class='btn btn-dark'>Cancel</td></tr>";--%>
-<%--                    } else {--%>
-<%--                        echo "</tr>";--%>
-<%--                    }--%>
+                <%--                <?php--%>
+                <%--                $sql = "SELECT * FROM tickets WHERE user_id=" . $user_id;--%>
+                <%--                $retval = mysqli_query($conn, $sql);--%>
+                <%--                if (!$retval) {--%>
+                <%--                    die('Could not get data: ' . mysqli_error($conn));--%>
+                <%--                }--%>
+                <%--                while ($row = mysqli_fetch_array($retval)) {--%>
+                <%--                    echo "<tr><td>" . $row["date"] . "</td>";--%>
+                <%--                    $sql_c = "SELECT * FROM courses WHERE ID =" . $row["course_id"];--%>
+                <%--                    $retval_c = mysqli_query($conn, $sql_c);--%>
+                <%--                    if (!$retval_c) {--%>
+                <%--                        die('Could not get data: ' . mysqli_error($conn));--%>
+                <%--                    }--%>
+                <%--                    $course = mysqli_fetch_array($retval_c);--%>
+                <%--                    echo "<td>" . $course['city_from'] . "</td>";--%>
+                <%--                    echo "<td>" . $course['city_to'] . "</td>";--%>
+                <%--                    echo "<td>" . $course['hour_dep'] . "</td>";--%>
+                <%--                    echo "<td>" . $course['hour_arr'] . "</td>";--%>
+                <%--                    echo "<td>" . $row['pass_no'] . "</td>";--%>
+                <%--                    switch ($row["status"]) {--%>
+                <%--                        case 0:--%>
+                <%--                            $status = "Reserved";--%>
+                <%--                            break;--%>
+                <%--                        case 1:--%>
+                <%--                            $status = "Payed for";--%>
+                <%--                            break;--%>
+                <%--                        case -1:--%>
+                <%--                            $status = "Cancelled";--%>
+                <%--                            break;--%>
+                <%--                    }--%>
+                <%--                    echo "<td>" . $status . "</td>";--%>
+                <%--                    if ($row["status"] == 0) {--%>
+                <%--                        echo "<td><a href='cancel_reservation.php?ticket_id=" . $row['ID'] . "' class='btn btn-dark'>Cancel</td></tr>";--%>
+                <%--                    } else {--%>
+                <%--                        echo "</tr>";--%>
+                <%--                    }--%>
 
-<%--                }--%>
-<%--                ?>--%>
+                <%--                }--%>
+                <%--                ?>--%>
             </table>
             <br>
             </p>
@@ -165,3 +182,6 @@
 </div>
 </body>
 </html>
+<%
+    }
+%>

@@ -38,10 +38,10 @@
         }
         switch ((Integer) session.getAttribute("type")) {
             case 1:
-                response.setHeader("Refresh", "3;url=client_page.jsp");
+                response.setHeader("Refresh", "0.5;url=client_page.jsp");
                 break;
             case 2:
-                response.setHeader("Refresh", "3;url=employee_page.jsp");
+                response.setHeader("Refresh", "0.5;url=employee_page.jsp");
                 break;
         }
 
