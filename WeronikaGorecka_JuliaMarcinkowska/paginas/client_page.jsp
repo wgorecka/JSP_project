@@ -9,24 +9,6 @@
         out.println("Error, redirecting to employee page.");
         response.setHeader("Refresh", "3;url=employee_page.jsp");
     } else {
-        int user_id = (Integer) session.getAttribute("user");
-        PreparedStatement psSelectRecord = null;
-        ResultSet rsSelectRecord = null;
-        String sqlSelectRecord = "SELECT * FROM users WHERE ID='" + user_id + "'";
-
-        assert conn != null;
-        try {
-            psSelectRecord = conn.prepareStatement(sqlSelectRecord);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-
-        try {
-            assert psSelectRecord != null;
-            rsSelectRecord = psSelectRecord.executeQuery();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
 %>
 <!doctype html>
 <html lang="en">
@@ -65,6 +47,24 @@
         <div class="card-body">
             <p class="card-text">
                 <%
+                    int user_id = (Integer) session.getAttribute("user");
+                    PreparedStatement psSelectRecord = null;
+                    ResultSet rsSelectRecord = null;
+                    String sqlSelectRecord = "SELECT * FROM users WHERE ID='" + user_id + "'";
+
+                    assert conn != null;
+                    try {
+                        psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+
+                    try {
+                        assert psSelectRecord != null;
+                        rsSelectRecord = psSelectRecord.executeQuery();
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
                     while (true) {
                         try {
                             if (!rsSelectRecord.next()) break;
@@ -103,45 +103,92 @@
                     <th>Status</th>
                     <th></th>
                 </tr>
-                <%--                <?php--%>
-                <%--                $sql = "SELECT * FROM tickets WHERE user_id=" . $user_id;--%>
-                <%--                $retval = mysqli_query($conn, $sql);--%>
-                <%--                if (!$retval) {--%>
-                <%--                    die('Could not get data: ' . mysqli_error($conn));--%>
-                <%--                }--%>
-                <%--                while ($row = mysqli_fetch_array($retval)) {--%>
-                <%--                    echo "<tr><td>" . $row["date"] . "</td>";--%>
-                <%--                    $sql_c = "SELECT * FROM courses WHERE ID =" . $row["course_id"];--%>
-                <%--                    $retval_c = mysqli_query($conn, $sql_c);--%>
-                <%--                    if (!$retval_c) {--%>
-                <%--                        die('Could not get data: ' . mysqli_error($conn));--%>
-                <%--                    }--%>
-                <%--                    $course = mysqli_fetch_array($retval_c);--%>
-                <%--                    echo "<td>" . $course['city_from'] . "</td>";--%>
-                <%--                    echo "<td>" . $course['city_to'] . "</td>";--%>
-                <%--                    echo "<td>" . $course['hour_dep'] . "</td>";--%>
-                <%--                    echo "<td>" . $course['hour_arr'] . "</td>";--%>
-                <%--                    echo "<td>" . $row['pass_no'] . "</td>";--%>
-                <%--                    switch ($row["status"]) {--%>
-                <%--                        case 0:--%>
-                <%--                            $status = "Reserved";--%>
-                <%--                            break;--%>
-                <%--                        case 1:--%>
-                <%--                            $status = "Payed for";--%>
-                <%--                            break;--%>
-                <%--                        case -1:--%>
-                <%--                            $status = "Cancelled";--%>
-                <%--                            break;--%>
-                <%--                    }--%>
-                <%--                    echo "<td>" . $status . "</td>";--%>
-                <%--                    if ($row["status"] == 0) {--%>
-                <%--                        echo "<td><a href='cancel_reservation.php?ticket_id=" . $row['ID'] . "' class='btn btn-dark'>Cancel</td></tr>";--%>
-                <%--                    } else {--%>
-                <%--                        echo "</tr>";--%>
-                <%--                    }--%>
+                <%
+                    psSelectRecord = null;
+                    rsSelectRecord = null;
+                    sqlSelectRecord = "SELECT * FROM tickets WHERE user_id=" + user_id;
 
-                <%--                }--%>
-                <%--                ?>--%>
+                    assert conn != null;
+                    try {
+                        psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+
+                    try {
+                        assert psSelectRecord != null;
+                        rsSelectRecord = psSelectRecord.executeQuery();
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    while (true) {
+                        try {
+                            if (!rsSelectRecord.next()) break;
+                            PreparedStatement psSelectRecord_c = null;
+                            ResultSet rsSelectRecord_c = null;
+                            String sql_c = "SELECT * FROM courses WHERE ID=" + rsSelectRecord.getInt("course_id");
+
+                            assert conn != null;
+                            try {
+                                psSelectRecord_c = conn.prepareStatement(sql_c);
+                            } catch (SQLException throwables) {
+                                throwables.printStackTrace();
+                            }
+
+                            try {
+                                assert psSelectRecord_c != null;
+                                rsSelectRecord_c = psSelectRecord_c.executeQuery();
+                            } catch (SQLException throwables) {
+                                throwables.printStackTrace();
+                            }
+                            while (true) {
+                                try {
+                                    if (!rsSelectRecord_c.next()) break;
+                %>
+                <tr>
+                    <td><%=rsSelectRecord.getString("date")%>
+                    </td>
+                    <td><%=rsSelectRecord_c.getString("city_from")%>
+                    </td>
+                    <td><%=rsSelectRecord_c.getString("city_to")%>
+                    </td>
+                    <td><%=rsSelectRecord_c.getString("hour_dep")%>
+                    </td>
+                    <td><%=rsSelectRecord_c.getString("hour_arr")%>
+                    </td>
+                    <td><%=rsSelectRecord.getString("pass_no")%>
+                    </td>
+                    <%
+                        String status = "";
+                        switch (rsSelectRecord.getInt("status")) {
+                            case 0:
+                                status = "Reserved";
+                                break;
+                            case 1:
+                                status = "Payed for";
+                                break;
+                            case -1:
+                                status = "Cancelled";
+                                break;
+                        }
+                    %>
+                    <td><%=status%>
+                    </td>
+                    <% if (rsSelectRecord.getInt("status") == 0) { %>
+                    <td><a href="cancel_reservation.jsp?ticket_id=" + <%=rsSelectRecord.getString("ID")%> +
+                           class='btn btn-dark'>Cancel</td>
+                    <% } %>
+                </tr>
+                <%
+                                } catch (SQLException throwables) {
+                                    throwables.printStackTrace();
+                                }
+                            }
+                        } catch (SQLException throwables) {
+                            throwables.printStackTrace();
+                        }
+                    }
+                %>
             </table>
             <br>
             </p>
