@@ -50,20 +50,20 @@
         </div>
         <div class="card-body">
             <p class="card-text">
-                <?php
-                $user_id = $_SESSION["user"];
-                global $conn;
-                $sql = "SELECT * FROM users WHERE ID=" . $user_id;
-                $retval = mysqli_query($conn, $sql);
-                if (!$retval) {
-                    die('Could not get data: ' . mysqli_error($conn));
-                }
-                $row = mysqli_fetch_array($retval);
-                echo "<b>Your name:</b> " . $row["name"] . "<br>";
-                echo "<b>Your email: </b>" . $row["email"] . "<br>";
-                echo "<b>Your login: </b>" . $row["login"] . "<br>";
-                echo "<a href='edit_data_view.jsp?user_id=" . $_SESSION["user"] . "' class='btn btn-dark mt-md-3'>Edit</a>";
-                ?>
+                <%--                <?php--%>
+                <%--                $user_id = $_SESSION["user"];--%>
+                <%--                global $conn;--%>
+                <%--                $sql = "SELECT * FROM users WHERE ID=" . $user_id;--%>
+                <%--                $retval = mysqli_query($conn, $sql);--%>
+                <%--                if (!$retval) {--%>
+                <%--                    die('Could not get data: ' . mysqli_error($conn));--%>
+                <%--                }--%>
+                <%--                $row = mysqli_fetch_array($retval);--%>
+                <%--                echo "<b>Your name:</b> " . $row["name"] . "<br>";--%>
+                <%--                echo "<b>Your email: </b>" . $row["email"] . "<br>";--%>
+                <%--                echo "<b>Your login: </b>" . $row["login"] . "<br>";--%>
+                <%--                echo "<a href='edit_data_view.jsp?user_id=" . $_SESSION["user"] . "' class='btn btn-dark mt-md-3'>Edit</a>";--%>
+                <%--                ?>--%>
             </p>
         </div>
     </div>

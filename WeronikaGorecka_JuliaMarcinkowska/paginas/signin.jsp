@@ -1,49 +1,49 @@
-<%--<?php--%>
-<%--include "../basedados/basedados.h";--%>
+<%@ page contentType="text/html; ISO-8859-1" language="java" pageEncoding="UTF-8" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
+<%
+    if (request.getParameter("login") != null && request.getParameter("password") != null) {
+        String login = request.getParameter("login");
+        String password = request.getParameter("password");
+        PreparedStatement psSelectRecord;
+        ResultSet rsSelectRecord;
 
-<%--session_start();--%>
+        String sqlSelectRecord = "SELECT * FROM users WHERE login='" + login + "' AND password='" + password + "'";
 
-<%--if (isset($_POST["login"]) && isset($_POST["password"])) {--%>
-<%--    $login = $_POST["login"];--%>
-<%--    $password = $_POST["password"];--%>
-<%--    global $conn;--%>
-<%--    $sql = "SELECT * FROM users WHERE login='" . $login . "' AND password='" . $password . "'";--%>
-<%--    $retval = mysqli_query($conn, $sql);--%>
-<%--    if (!$retval) {--%>
-<%--        die('Could not get data: ' . mysqli_error($conn));--%>
-<%--    }--%>
-<%--    $row = mysqli_fetch_array($retval);--%>
-<%--    if (!$row) {--%>
-<%--        $_SESSION["user"] = -1;--%>
-<%--        $_SESSION["type"] = -1;--%>
-<%--        echo "Invalid login or password, please try to log in again or contact administrator.";--%>
-<%--        header('refresh:3; url=index.html');--%>
-<%--    } else if (strcmp($row["login"], $login) == 0 && strcmp($row["password"], $password) == 0 && $row["status"] == 1) {--%>
-<%--        $_SESSION["user"] = $row["ID"];--%>
-<%--        $_SESSION["type"] = $row["usertype"];--%>
-<%--    } else if (strcmp($row["login"], $login) == 0 && strcmp($row["password"], $password) == 0 && $row["status"] == 0) {--%>
-<%--        echo "Your account is registered, but not yet confirmed.";--%>
-<%--        $_SESSION["user"] = -1;--%>
-<%--        $_SESSION["type"] = -1;--%>
-<%--        header('refresh:3; url=index.html');--%>
-<%--    } else {--%>
-<%--        $_SESSION["user"] = -1;--%>
-<%--        $_SESSION["type"] = -1;--%>
-<%--        echo "Invalid login or password, please try to log in again or contact administrator.";--%>
-<%--        header('refresh:3; url=index.html');--%>
-<%--    }--%>
+        assert conn != null;
+        try {
+            psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+            assert psSelectRecord != null;
+            rsSelectRecord = psSelectRecord.executeQuery();
+            if (!rsSelectRecord.next()) {
+                out.println("Error while logging in");
+                session.setAttribute("user", -1);
+                session.setAttribute("type", -1);
+                response.setHeader("Refresh", "3;url=index.jsp");
+            } else if (rsSelectRecord.getInt("status") == 1) {
+                session.setAttribute("user", rsSelectRecord.getInt("ID"));
+                session.setAttribute("type", rsSelectRecord.getInt("usertype"));
+            } else if (rsSelectRecord.getInt("status") == 0) {
+                out.println("Your account is registered, but not yet confirmed.");
+                session.setAttribute("user", -1);
+                session.setAttribute("type", -1);
+                response.setHeader("Refresh", "3;url=index.jsp");
+            } else {
+                out.println("Invalid login or password, please try to log in again or contact administrator.");
+                session.setAttribute("user", -1);
+                session.setAttribute("type", -1);
+                response.setHeader("Refresh", "3;url=index.jsp");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        switch ((Integer) session.getAttribute("type")) {
+            case 1:
+                response.setHeader("Refresh", "3;url=client_page.jsp");
+                break;
+            case 2:
+                response.setHeader("Refresh", "3;url=employee_page.jsp");
+                break;
+        }
 
-<%--    switch ($_SESSION["type"]) {--%>
-<%--        case 1:--%>
-<%--            header('refresh:0.5; url=client_page.php');--%>
-<%--            break;--%>
-<%--        case 3:--%>
-<%--        case 2:--%>
-<%--            header('refresh:0.5; url=employee_page.php');--%>
-<%--            break;--%>
-<%--    }--%>
-<%--} else {--%>
-<%--    session_destroy();--%>
-<%--    header("refresh:0;url = ./index.html");--%>
-<%--}--%>
-
+    }
+%>
