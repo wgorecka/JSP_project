@@ -58,10 +58,10 @@
 </div>
 <div>
 <%
-    int user_id = (Integer) session.getAttribute("user");
+    int user_id = Integer.parseInt(request.getParameter("user_id"));
     PreparedStatement psSelectRecord = null;
     ResultSet rsSelectRecord = null;
-    String sqlSelectRecord = "SELECT * FROM users WHERE ID='" + user_id + "'";
+    String sqlSelectRecord = "SELECT * FROM users WHERE ID=" + user_id;
 
     assert conn != null;
 
@@ -69,7 +69,7 @@
         psSelectRecord = conn.prepareStatement(sqlSelectRecord);
         assert psSelectRecord != null;
         rsSelectRecord = psSelectRecord.executeQuery();
-        if (!rsSelectRecord.next()){
+        if (!rsSelectRecord.next()) {
             out.println("Could not get data");
         } else {
 

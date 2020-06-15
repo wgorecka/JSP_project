@@ -6,12 +6,12 @@
         out.println("Error, you are not logged in, redirecting to main page.");
         response.setHeader("Refresh", "3;url=index.jsp");
     } else {
-        if (session.getAttribute("user") != null){
+        if (session.getAttribute("user") != null) {
             String name = request.getParameter("name");
             String email = request.getParameter("email");
             String login = request.getParameter("login");
             String password = request.getParameter("password");
-            int user_id = (Integer) session.getAttribute("user");
+            int user_id = Integer.parseInt(request.getParameter("user"));
             int type = (Integer) session.getAttribute("type");
 
             PreparedStatement psSelectRecord = null;
