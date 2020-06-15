@@ -28,12 +28,8 @@
                         + "'" + email + "'" + "," + "'" + login + "'" + "," + "'" + password + "'" + "," + "1" + ")";
                 psInsert = conn.prepareStatement(sqlInsert);
                 assert psInsert != null;
-                int i = psInsert.executeUpdate(sqlInsert);
-                if (i == 1) {
-                    out.println("Registration successful, please wait for account confirmation.");
-                } else {
-                    out.println("Registration failed, try again later or contact us.");
-                }
+                psInsert.executeUpdate(sqlInsert);
+                out.println("Registration successful, please wait for account confirmation.");
                 response.setHeader("Refresh", "3;url=index.jsp");
             }
 

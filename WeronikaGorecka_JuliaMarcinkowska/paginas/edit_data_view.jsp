@@ -1,11 +1,12 @@
-<%--<?php--%>
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--?>--%>
+<%@ page language="java" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
+
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else {
+%>
 
 <!doctype html>
 <html lang="en">
@@ -56,36 +57,45 @@
     <img src="resources/bus_icon.png">
 </div>
 <div>
-<%--    <?php--%>
-<%--    include "../basedados/basedados.h";--%>
+<%
+    int user_id = (Integer) session.getAttribute("user");
+    PreparedStatement psSelectRecord = null;
+    ResultSet rsSelectRecord = null;
+    String sqlSelectRecord = "SELECT * FROM users WHERE ID='" + user_id + "'";
 
-<%--    $user_id = $_GET["user_id"];--%>
-<%--    global $conn;--%>
-<%--    $sql = "SELECT * FROM users WHERE ID=" . $user_id;--%>
-<%--    $retval = mysqli_query($conn, $sql);--%>
-<%--    if (!$retval) {--%>
-<%--        die('Could not get data: ' . mysqli_error($conn));--%>
-<%--    }--%>
-<%--    $row = mysqli_fetch_array($retval);--%>
-<%--    $name = $row["name"];--%>
-<%--    $email = $row["email"];--%>
-<%--    $login = $row["login"];--%>
-<%--    $password = $row["password"];--%>
-    ?>
+    assert conn != null;
+
+    try {
+        psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+        assert psSelectRecord != null;
+        rsSelectRecord = psSelectRecord.executeQuery();
+        if (!rsSelectRecord.next()){
+            out.println("Could not get data");
+        } else {
+
+
+%>
 </div>
-<form class='form-signin' action='edit_data.php' method='post'>
+<form class='form-signin' action='edit_data.jsp' method='post'>
     <h1 class='h3 mb-3 font-weight-normal'>Edit personal information</h1>
-    <input type='text' name='name' class='form-control mt-lg-1' placeholder="Name" value='<?php echo $name; ?>'
+    <input type='text' name='name' class='form-control mt-lg-1' placeholder="Name" value='<%=rsSelectRecord.getString("name")%>'
            autofocus required/>
-    <input type='email' name='email' class='form-control mt-lg-1' placeholder="Email" value='<?php echo $email; ?>'
+    <input type='email' name='email' class='form-control mt-lg-1' placeholder="Email" value='<%=rsSelectRecord.getString("email")%>'
            required/>
-    <input type='text' name='login' class='form-control mt-lg-1' placeholder="Login" value='<?php echo $login; ?>'
+    <input type='text' name='login' class='form-control mt-lg-1' placeholder="Login" value='<%=rsSelectRecord.getString("login")%>'
            required/>
     <input type='password' name='password' class='form-control mt-lg-1' placeholder="Password"
-           value='<?php echo $password; ?>' required/>
-    <input type = 'hidden' name='user' value='<?php echo $user_id; ?>'/>
+           value='<%=rsSelectRecord.getString("password")%>' required/>
+    <input type = 'hidden' name='user' value='<%=rsSelectRecord.getString("ID")%>'/>
     <button class='btn btn-lg btn-primary btn-block mt-lg-1' type='submit'>Submit</button>
 </form>
 
 </body>
 </html>
+
+<%
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } }
+%>

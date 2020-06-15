@@ -1,49 +1,57 @@
-<%--<?php--%>
-<%--include "../basedados/basedados.h";--%>
+<%@ page language="java" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
 
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else {
+        if (session.getAttribute("user") != null){
+            String name = request.getParameter("name");
+            String email = request.getParameter("email");
+            String login = request.getParameter("login");
+            String password = request.getParameter("password");
+            int user_id = (Integer) session.getAttribute("user");
+            int type = (Integer) session.getAttribute("type");
 
-<%--if (isset($_SESSION["user"])) {--%>
-<%--    $name = $_POST["name"];--%>
-<%--    $email = $_POST["email"];--%>
-<%--    $login = $_POST["login"];--%>
-<%--    $password = $_POST["password"];--%>
-<%--    $user_id = $_POST["user"];--%>
-<%--    global $conn;--%>
-<%--    $sql = "SELECT * FROM users WHERE ID=" . $user_id;--%>
-<%--    $retval = mysqli_query($conn, $sql);--%>
-<%--    if (!$retval) {--%>
-<%--        die('Could not get data: ' . mysqli_error($conn));--%>
-<%--    }--%>
-<%--    $row = mysqli_fetch_array($retval);--%>
-<%--    $sql = "UPDATE users SET name='" . $name . "', email='" . $email . "', login='" . $login . "', --%>
-<%--            password='" . $password . "' WHERE id=" . $user_id;--%>
-<%--    $retval = mysqli_query($conn, $sql);--%>
-<%--    if (!$retval) {--%>
-<%--        die('Could not update data: ' . mysqli_error($conn));--%>
-<%--    }--%>
-<%--    if (mysqli_affected_rows($conn) == 1)--%>
-<%--        echo "Edition of personal information successful.";--%>
-<%--    else--%>
-<%--        echo "Edition of personal information failed or no changes were made. Try again later or contact us.";--%>
+            PreparedStatement psSelectRecord = null;
+            PreparedStatement psUpdate = null;
+            ResultSet rsSelectRecord = null;
+            String sqlSelectRecord = "SELECT * FROM users WHERE ID='" + user_id + "'";
 
-<%--    switch ($_SESSION["type"]) {--%>
-<%--        case 1:--%>
-<%--            header('refresh:4; url=client_page.php');--%>
-<%--            break;--%>
-<%--        case 3:--%>
-<%--        case 2:--%>
-<%--            header('refresh:4; url=employee_page.jsp');--%>
-<%--            break;--%>
-<%--    }--%>
-<%--} else {--%>
-<%--    session_destroy();--%>
-<%--    header("refresh:0;url = ./index.html");--%>
-<%--}--%>
+            assert conn != null;
 
-<%--?>--%>
+            try {
+                psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+                assert psSelectRecord != null;
+                rsSelectRecord = psSelectRecord.executeQuery();
+                if (!rsSelectRecord.next()){
+                    out.println("Could not get data");
+                } else {
+                    String sqlUpdate =  "UPDATE users SET name='" + name + "', email='" + email + "', login='" + login
+                            + "', password='" + password + "' WHERE id=" + user_id;
+                    psUpdate = conn.prepareStatement(sqlUpdate);
+                    assert psUpdate != null;
+                    psUpdate.executeUpdate(sqlUpdate);
+                    out.println("Edition of personal information successful.");
+
+
+                    switch(type){
+                        case 1:
+                            response.setHeader("Refresh", "4;url=client_page.jsp");
+                            break;
+                        case 2:
+                            response.setHeader("Refresh", "4;url=employee_page.jsp");
+                            break;
+                    }
+
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+
+        } else response.setHeader("Refresh", "4;url=index.jsp");
+    }
+%>
