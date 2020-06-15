@@ -50,7 +50,7 @@
                     int user_id = (Integer) session.getAttribute("user");
                     PreparedStatement psSelectRecord = null;
                     ResultSet rsSelectRecord = null;
-                    String sqlSelectRecord = "SELECT * FROM users WHERE ID='" + user_id + "'";
+                    String sqlSelectRecord = "SELECT * FROM users WHERE ID=" + user_id;
 
                     assert conn != null;
                     try {

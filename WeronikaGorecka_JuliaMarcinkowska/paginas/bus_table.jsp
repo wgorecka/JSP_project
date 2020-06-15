@@ -1,11 +1,31 @@
-<%--<?php--%>
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--?>--%>
+<%@ page contentType="text/html; ISO-8859-1" language="java" pageEncoding="UTF-8" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
+
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else {
+        int course_id = Integer.parseInt(request.getParameter("route_select"));
+        String date_sel = request.getParameter("date_search");
+        PreparedStatement psSelectRecord = null;
+        ResultSet rsSelectRecord = null;
+        String sqlSelectRecord = "SELECT * FROM courses WHERE ID=" + course_id;
+
+        assert conn != null;
+        try {
+            psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        try {
+            assert psSelectRecord != null;
+            rsSelectRecord = psSelectRecord.executeQuery();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+%>
 <!doctype html>
 <html lang="en">
 <head>
@@ -13,7 +33,6 @@
     <link rel="stylesheet" href="bootstrap-4.5.0/css/bootstrap.min.css"/>
 
     <style>
-
         html,
         body {
             height: 100%;
@@ -44,37 +63,65 @@
             <th>No of places left</th>
             <th></th>
         </tr>
-<%--        <?php--%>
-<%--        include "../basedados/basedados.h";--%>
+        <%
+            while (true) {
+                try {
+                    if (!rsSelectRecord.next()) break;
+                    PreparedStatement psSelectRecord_c = null;
+                    ResultSet rsSelectRecord_c = null;
+                    String sql_c = "SELECT sum(pass_no) AS sum FROM tickets where course_id=" + course_id + " AND date='" + date_sel +
+                            "'AND status <> '-1'";
 
-<%--        global $conn;--%>
-<%--        $course_id = $_POST["route_select"];--%>
-<%--        $date_sel = $_POST["date_search"];--%>
-<%--        $sql = "SELECT * FROM courses where ID=" . $course_id;--%>
-<%--        $retval = mysqli_query($conn, $sql);--%>
-<%--        if (!$retval) {--%>
-<%--            die('Could not get data: ' . mysqli_error($conn));--%>
-<%--        }--%>
-<%--        while ($row = mysqli_fetch_array($retval)) {--%>
-<%--            $sql_r = "SELECT sum(pass_no) FROM tickets where course_id=" . $course_id . " AND date='" . $date_sel .--%>
-<%--                "'AND status <> '-1'";--%>
-<%--            $retval_r = mysqli_query($conn, $sql_r);--%>
-<%--            if (!$retval_r) {--%>
-<%--                die('Could not get data: ' . mysqli_error($conn));--%>
-<%--            }--%>
-<%--            $res = mysqli_fetch_array($retval_r);--%>
-<%--            $places_left = $row['capacity'] - $res[0];--%>
-<%--            echo "<td>" . $date_sel . "</td>";--%>
-<%--            echo "<td>" . $row['city_from'] . "</td>";--%>
-<%--            echo "<td>" . $row['city_to'] . "</td>";--%>
-<%--            echo "<td>" . $row['hour_dep'] . "</td>";--%>
-<%--            echo "<td>" . $row['hour_arr'] . "</td>";--%>
-<%--            echo "<td>" . $row['price'] . "</td>";--%>
-<%--            echo "<td>" . $places_left . "</td>";--%>
-<%--            echo "<td><a href='confirm_buy.jsp?date=" . $date_sel . "&course_id=" . $course_id . "' class='btn btn-dark'>Buy</a></td></tr>";--%>
-<%--        }--%>
-<%--        ?>--%>
+                    assert conn != null;
+                    try {
+                        psSelectRecord_c = conn.prepareStatement(sql_c);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+
+                    try {
+                        assert psSelectRecord_c != null;
+                        rsSelectRecord_c = psSelectRecord_c.executeQuery();
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    while (true) {
+                        try {
+                            if (!rsSelectRecord_c.next()) break;
+                            int places_left = rsSelectRecord.getInt("capacity") - rsSelectRecord_c.getInt("sum");
+                            String href = "confirm_buy.jsp?date=" + date_sel + "&course_id=" + course_id;
+        %>
+        <tr>
+            <td><%=date_sel%>
+            </td>
+            <td><%=rsSelectRecord.getString("city_from")%>
+            </td>
+            <td><%=rsSelectRecord.getString("city_to")%>
+            </td>
+            <td><%=rsSelectRecord.getString("hour_dep")%>
+            </td>
+            <td><%=rsSelectRecord.getString("hour_arr")%>
+            </td>
+            <td><%=rsSelectRecord.getString("price")%>
+            </td>
+            <td><%=places_left%>
+            </td>
+            <td><a href="<%=href%>" class='btn btn-dark'>Buy</a></td>
+        </tr>
+        <%
+                        } catch (SQLException throwables) {
+                            throwables.printStackTrace();
+                        }
+                    }
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        %>
     </table>
 </div>
 </body>
 </html>
+<%
+    }
+%>
