@@ -1,18 +1,15 @@
-<%--<?php--%>
+<%@ page language="java" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
 
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
-
-<%--if (isset($_SESSION["user"]) && isset($_SESSION["type"]) && $_SESSION["type"] == 1) {--%>
-<%--    echo "Error, redirecting to client page.";--%>
-<%--    header('refresh:2; url=client_page.php');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--?>--%>
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else if (session.getAttribute("user") != null && session.getAttribute("type") != null && (Integer) session.getAttribute("type") != 2) {
+        out.println("Error, redirecting to employee page.");
+        response.setHeader("Refresh", "3;url=client_page.jsp");
+    } else {
+%>
 
 <!doctype html>
 <html lang="en">
@@ -53,63 +50,86 @@
             <th>Reservation status</th>
             <th></th>
         </tr>
-<%--        <?php--%>
-<%--        include "../basedados/basedados.h";--%>
+        <%
+            PreparedStatement psSelectRecord = null;
+            ResultSet rsSelectRecord = null;
+            String sqlSelectRecord = "SELECT * FROM tickets ORDER BY CASE WHEN status = '0' THEN 1 WHEN status = '1' " +
+                    "THEN 2 WHEN status = '-1' THEN 3 END ASC";
+            assert conn != null;
+            try {
+                psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+                assert psSelectRecord != null;
+                rsSelectRecord = psSelectRecord.executeQuery();
+                if (!rsSelectRecord.next()) {
+                    out.println("Could not get data");
+                } else {
 
-<%--        global $conn;--%>
-<%--        if ($_SESSION["type"] == 3) {--%>
-<%--            $sql = "SELECT * FROM tickets ORDER BY CASE WHEN status = '0' THEN 1 WHEN status = '1' THEN 2 WHEN status = '-1' THEN 3 END ASC";--%>
-<%--        } elseif ($_SESSION["type"] == 2) {--%>
-<%--            $sql = "SELECT * FROM tickets ORDER BY date desc";--%>
-<%--        }--%>
+                    while (true) {
 
-<%--        $retval = mysqli_query($conn, $sql);--%>
-<%--        if (!$retval) {--%>
-<%--            die('Could not get data: ' . mysqli_error($conn));--%>
-<%--        }--%>
-<%--        while ($row = mysqli_fetch_array($retval)) {--%>
-<%--            echo "<tr><td>" . $row["date"] . "</td>";--%>
-<%--            $sql_u = "SELECT * FROM users WHERE ID =" . $row["user_id"];--%>
-<%--            $retval_u = mysqli_query($conn, $sql_u);--%>
-<%--            if (!$retval_u) {--%>
-<%--                die('Could not get data: ' . mysqli_error($conn));--%>
-<%--            }--%>
-<%--            $user = mysqli_fetch_array($retval_u);--%>
-<%--            echo "<td>" . $user['name'] . "</td>";--%>
-<%--            $sql_c = "SELECT * FROM courses WHERE ID =" . $row["course_id"];--%>
-<%--            $retval_c = mysqli_query($conn, $sql_c);--%>
-<%--            if (!$retval_c) {--%>
-<%--                die('Could not get data: ' . mysqli_error($conn));--%>
-<%--            }--%>
-<%--            $course = mysqli_fetch_array($retval_c);--%>
-<%--            echo "<td>" . $course['city_from'] . "</td>";--%>
-<%--            echo "<td>" . $course['city_to'] . "</td>";--%>
-<%--            echo "<td>" . $course['hour_dep'] . "</td>";--%>
-<%--            echo "<td>" . $course['hour_arr'] . "</td>";--%>
-<%--            echo "<td>" . $row["pass_no"] . "</td>";--%>
-<%--            switch ($row["status"]) {--%>
-<%--                case 0:--%>
-<%--                    $status = "Reserved";--%>
-<%--                    break;--%>
-<%--                case 1:--%>
-<%--                    $status = "Payed for";--%>
-<%--                    break;--%>
-<%--                case -1:--%>
-<%--                    $status = "Cancelled";--%>
-<%--                    break;--%>
-<%--            }--%>
-<%--            echo "<td>" . $status . "</td>";--%>
-<%--            if ($_SESSION["type"] == 3) {--%>
-<%--                if ($row["status"] != -1) {--%>
-<%--                    echo "<td><a href='cancel_reservation.php?ticket_id=" . $row['ID'] . "' class='btn btn-dark'>Cancel</a></td>";--%>
-<%--                }--%>
-<%--                if ($row["status"] == 0) {--%>
-<%--                    echo "<td><a href='confirm_ticket.php?ticket_id=" . $row['ID'] . "' class='btn btn-dark'>Confirm</a></td>";--%>
-<%--                }--%>
-<%--            }--%>
-<%--            echo "</tr>";--%>
-<%--        }--%>
-<%--        ?>--%>
+                        PreparedStatement psSelectRecord_u = null;
+                        ResultSet rsSelectRecord_u = null;
+                        String sql_u = "SELECT * FROM users WHERE ID=" + rsSelectRecord.getInt("user_id");
+                        psSelectRecord_u = conn.prepareStatement(sql_u);
+                        assert psSelectRecord_u != null;
+                        rsSelectRecord_u = psSelectRecord_u.executeQuery();
+
+                        if (!rsSelectRecord_u.next()) {
+                            out.println("Could not get data");
+                        }
+
+                        PreparedStatement psSelectRecord_c = null;
+                        ResultSet rsSelectRecord_c = null;
+                        String sql_c = "SELECT * FROM courses WHERE ID=" + rsSelectRecord.getInt("course_id");
+                        psSelectRecord_c = conn.prepareStatement(sql_c);
+                        assert psSelectRecord_c != null;
+                        rsSelectRecord_c = psSelectRecord_c.executeQuery();
+
+                        if (!rsSelectRecord_c.next()) {
+                            out.println("Could not get data");
+                        } %>
+        <tr>
+            <td><%=rsSelectRecord.getString("date")%>
+            </td>
+            <td><%=rsSelectRecord_u.getString("name")%>
+            </td>
+            <td><%=rsSelectRecord_c.getString("city_from")%>
+            </td>
+            <td><%=rsSelectRecord_c.getString("city_to")%>
+            </td>
+            <td><%=rsSelectRecord_c.getString("hour_dep")%>
+            </td>
+            <td><%=rsSelectRecord_c.getString("hour_arr")%>
+            </td>
+            <td><%=rsSelectRecord.getString("pass_no")%>
+            </td>
+            <%
+                String status = "";
+                switch (rsSelectRecord.getInt("status")) {
+                    case 0:
+                        status = "Reserved";
+                        break;
+                    case 1:
+                        status = "Payed for";
+                        break;
+                    case -1:
+                        status = "Cancelled";
+                        break;
+                }
+            %>
+            <td><%=status%>
+            </td>
+
+        </tr>
+        <%
+                            if (!rsSelectRecord.next()) break;
+                        }
+
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        %>
     </table>
 </div>
 </body>

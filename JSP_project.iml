@@ -20,24 +20,15 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library" scope="PROVIDED">
+    <orderEntry type="library" exported="" scope="PROVIDED" name="Tomcat 7.0.99" level="application_server_libraries" />
+    <orderEntry type="module-library" exported="" scope="PROVIDED">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../Program Files/XAMPP/tomcat/lib/mysql-connector-java-5.1.48-bin.jar!/" />
+          <root url="jar://C:/xampp/tomcat/lib/mysql-connector-java-5.1.48-bin.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="PROVIDED">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../Program Files/XAMPP/tomcat/webapps/ROOT/WEB-INF/lib/mysql-connector-java-5.1.48.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" scope="PROVIDED" name="Tomcat 7.0.103" level="application_server_libraries" />
   </component>
 </module>
