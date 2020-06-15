@@ -13,15 +13,15 @@
         int pass_no = Integer.parseInt(request.getParameter("pass_no"));
 
         PreparedStatement psInsert;
-        String sqlInsert = "INSERT INTO tickets (course_id, user_id, pass_no, date) VALUES (" + course_id + ","
-                + user_id + "," + pass_no + "," + "'" + date + "'" + ")";
-        psInsert = conn.prepareStatement(sqlInsert);
-        assert psInsert != null;
-        int i = psInsert.executeUpdate(sqlInsert);
-        if (i == 1) {
-            out.println("Reservation successful. You will receive an email with payment information. If we don't receive payment\n" +
-                    "         in 3 working days, your reservation will be canceled.");
-        } else {
+        try {
+            String sqlInsert = "INSERT INTO tickets (course_id, user_id, pass_no, date) VALUES (" + course_id + ","
+                    + user_id + "," + pass_no + "," + "'" + date + "'" + ")";
+            psInsert = conn.prepareStatement(sqlInsert);
+            assert psInsert != null;
+            psInsert.executeUpdate(sqlInsert);
+            out.println("Reservation successful. You will receive an email with payment information. If we don't receive" +
+                    " payment in 3 working days, your reservation will be canceled.");
+        } catch (SQLException ex) {
             out.println("Reservation failed, try again later or contact us.");
         }
         response.setHeader("Refresh", "4;url=client_page.jsp");

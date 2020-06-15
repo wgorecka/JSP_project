@@ -6,7 +6,7 @@
         out.println("Error, you are not logged in, redirecting to main page.");
         response.setHeader("Refresh", "3;url=index.jsp");
     } else if (session.getAttribute("user") != null && session.getAttribute("type") != null && (Integer) session.getAttribute("type") != 2) {
-        out.println("Error, redirecting to employee page.");
+        out.println("Error, redirecting to client page.");
         response.setHeader("Refresh", "3;url=client_page.jsp");
     } else {
 %>
