@@ -1,11 +1,14 @@
-<%--<?php--%>
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--?>--%>
+<%@ page contentType="text/html; ISO-8859-1" language="java" pageEncoding="UTF-8" import="java.sql.*" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
+
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else {
+%>
 
 <!doctype html>
 <html lang="en">
@@ -29,25 +32,52 @@
 <div class="d-flex">
     <img src="resources/bus_icon.png" class="mx-auto mt-lg-5 mb-lg-4" style="width: 250px;"/>
 </div>
-<%--<?php--%>
-<%--include "../basedados/basedados.h";--%>
+<%
+    PreparedStatement psSelectRecord = null;
+    ResultSet rsSelectRecord = null;
+    String sqlSelectRecord = "SELECT * FROM courses";
 
-<%--global $conn;--%>
-<%--$sql = "SELECT * FROM courses";--%>
-<%--$retval = mysqli_query($conn, $sql);--%>
-<%--if (!$retval) {--%>
-<%--    die('Could not get data: ' . mysqli_error($conn));--%>
-<%--}--%>
-<%--echo "<form class='justify-content-center d-flex' action='bus_table.php' method='post'>";--%>
-<%--echo "<select class='custom-select w-25 mx-lg-3' name='route_select' required>";--%>
-<%--echo "<option value='' disabled selected>Choose route</option>";--%>
-<%--while ($row = mysqli_fetch_array($retval)) {--%>
-<%--    echo "<option value=" . $row["ID"] . ">" . $row["city_from"] . " - " . $row["city_to"] . "</option>";--%>
-<%--}--%>
-<%--echo "</select>";--%>
-<%--echo "<input type='date' min='" . date("Y-m-d") . "' name='date_search' class='form-control w-25 mx-lg-3' placeholder='Date' required>";--%>
-<%--echo "<button class='btn btn-dark' type='submit'>Search</button>";--%>
-<%--?>--%>
+    assert conn != null;
+    try {
+        psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+    } catch (SQLException throwables) {
+        throwables.printStackTrace();
+    }
+
+    try {
+        assert psSelectRecord != null;
+        rsSelectRecord = psSelectRecord.executeQuery();
+    } catch (SQLException throwables) {
+        throwables.printStackTrace();
+    }
+%>
+<form class='justify-content-center d-flex' action='bus_table.jsp' method='post'>
+    <select class='custom-select w-25 mx-lg-3' name='route_select' required>
+        <option value='' disabled selected>Choose route</option>
+        <%
+            while (true) {
+                try {
+                    if (!rsSelectRecord.next()) break;
+                    String opt = rsSelectRecord.getString("city_from") + " - " + rsSelectRecord.getString("city_to");
+        %>
+        <option value="<%=rsSelectRecord.getInt("ID")%>"><%=opt%>
+        </option>
+        <%
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        %>
+    </select>
+    <%
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    %>
+    <input type='date' min='<%=sdf.format(new Date())%>' name='date_search' class='form-control w-25 mx-lg-3'
+           placeholder='Date' required>
+    <button class='btn btn-dark' type='submit'>Search</button>
 </form>
 </body>
 </html>
+<%
+    }
+%>

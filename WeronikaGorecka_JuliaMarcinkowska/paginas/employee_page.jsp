@@ -37,20 +37,41 @@
         </div>
         <div class="card-body">
             <p class="card-text">
-                <?php
-                $user_id = $_SESSION["user"];
-                global $conn;
-                $sql = "SELECT * FROM users WHERE ID=" . $user_id;
-                $retval = mysqli_query($conn, $sql);
-                if (!$retval) {
-                    die('Could not get data: ' . mysqli_error($conn));
-                }
-                $row = mysqli_fetch_array($retval);
-                echo "<b>Your name: </b>" . $row["name"] . "<br>";
-                echo "<b>Your email: </b>" . $row["email"] . "<br>";
-                echo "<b>Your login: </b>" . $row["login"] . "<br>";
-                echo "<a href='edit_data_view.php?user_id=" . $_SESSION["user"] . "' class='btn btn-dark mt-md-3'>Edit</a>";
-                ?>
+                <%
+                    int user_id = (Integer) session.getAttribute("user");
+                    PreparedStatement psSelectRecord = null;
+                    ResultSet rsSelectRecord = null;
+                    String sqlSelectRecord = "SELECT * FROM users WHERE ID='" + user_id + "'";
+
+                    assert conn != null;
+                    try {
+                        psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+
+                    try {
+                        assert psSelectRecord != null;
+                        rsSelectRecord = psSelectRecord.executeQuery();
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    while (true) {
+                        try {
+                            if (!rsSelectRecord.next()) break;
+
+                %>
+                <b>Your name:</b> <%=rsSelectRecord.getString("name")%> <br>
+                <b>Your email: </b><%=rsSelectRecord.getString("email")%> <br>
+                <b>Your login: </b><%=rsSelectRecord.getString("login")%> <br>
+                <%
+                        } catch (SQLException throwables) {
+                            throwables.printStackTrace();
+                        }
+                    }
+                    String href = "edit_data_view.jsp?user_id=" + user_id;
+                %>
+                <a href="<%=href%>" class='btn btn-dark mt-md-3'>Edit</a>
             </p>
         </div>
     </div>
@@ -71,15 +92,7 @@
         </div>
         <div class="card-body">
             <p class="card-text">Pode gerir aqui os nossos utilizadores.</p>
-<%--            <?php--%>
-<%--            if ($_SESSION["type"] == 2) {--%>
-<%--                echo " <a class='btn btn-dark' href='users_table.jsp'>Go to clients</a>";--%>
-<%--            }--%>
-<%--            elseif ($_SESSION["type"] == 3) {--%>
-<%--                echo " <a class='btn btn-dark' href='users_table.jsp'>Go to users</a>";--%>
-<%--            }--%>
-<%--            ?>--%>
-
+            <a class='btn btn-dark' href='users_table.jsp'>Go to users</a>
         </div>
     </div>
 </div>

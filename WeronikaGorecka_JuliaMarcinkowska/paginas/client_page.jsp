@@ -174,19 +174,20 @@
                     %>
                     <td><%=status%>
                     </td>
-                    <% if (rsSelectRecord.getInt("status") == 0) { %>
-                    <td><a href="cancel_reservation.jsp?ticket_id=" + <%=rsSelectRecord.getString("ID")%> +
-                           class='btn btn-dark'>Cancel</td>
+                    <% if (rsSelectRecord.getInt("status") == 0) {
+                        String href_cancel = "cancel_reservation.jsp?ticket_id=" + rsSelectRecord.getString("ID");
+                    %>
+                    <td><a href="<%=href_cancel%>" class='btn btn-dark'>Cancel</a></td>
                     <% } %>
                 </tr>
-                <%
-                                } catch (SQLException throwables) {
-                                    throwables.printStackTrace();
-                                }
+            <%
+                            } catch (SQLException throwables) {
+                                throwables.printStackTrace();
                             }
-                        } catch (SQLException throwables) {
-                            throwables.printStackTrace();
                         }
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
                     }
                 %>
             </table>
