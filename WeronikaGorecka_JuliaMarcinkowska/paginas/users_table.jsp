@@ -13,7 +13,7 @@
         PreparedStatement psSelectRecord = null;
         ResultSet rsSelectRecord = null;
         String sqlSelectRecord = "SELECT * FROM users WHERE ID <>" + user_id +
-                " ORDER BY CASE WHEN status = 0 THEN 1 WHEN status = 1 THEN 2 WHEN status = -1 THEN 3 END ASC";
+                " ORDER BY CASE WHEN status = '0' THEN 1 WHEN status = '1' THEN 2 WHEN status = '-1' THEN 3 END ASC";
 
         assert conn != null;
         try {
@@ -119,14 +119,20 @@
             %>
             <td><a href="<%=href_conf%>" class='btn btn-dark'>Confirm</a></td>
             <%
+            } else {
+            %>
+            <td></td>
+            <%
                 }
-                String href_edit = "edit_data_view.jsp?user_id=" + rsSelectRecord.getString("ID");
-                String href_del = "delete_user.jsp?user_id=" + rsSelectRecord.getString("ID");
+                if (rsSelectRecord.getInt("status") != -1) {
+                    String href_edit = "edit_data_view.jsp?user_id=" + rsSelectRecord.getString("ID");
+                    String href_del = "delete_user.jsp?user_id=" + rsSelectRecord.getString("ID");
             %>
             <td><a href='<%=href_edit%>' class='btn btn-dark'>Edit user</a></td>
             <td><a href='<%=href_del%>' class='btn btn-dark'>Delete user</a></td>
         </tr>
         <%
+                    }
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -135,7 +141,7 @@
     </table>
 </div>
 <div class="d-flex justify-content-center m-5">
-    <a href='add_user_view.jsp' class='btn btn-dark'>Add new client</a>
+    <a href='add_user_view.jsp' class='btn btn-dark'>Add new user</a>
 </div>
 </body>
 </html>

@@ -1,17 +1,16 @@
-<%--<?php--%>
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
+<%@ page contentType="text/html; ISO-8859-1" language="java" pageEncoding="UTF-8" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
 
-<%--if (isset($_SESSION["user"]) && isset($_SESSION["type"]) && $_SESSION["type"] == 1) {--%>
-<%--    echo "Error, redirecting to client page.";--%>
-<%--    header('refresh:2; url=client_page.jsp');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--?>--%>
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else if (session.getAttribute("user") != null && session.getAttribute("type") != null && (Integer) session.getAttribute("type") != 2) {
+        out.println("Error, redirecting to client page.");
+        response.setHeader("Refresh", "3;url=client_page.jsp");
+    } else {
+%>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -62,32 +61,41 @@
 </div>
 <form class="form-signin" action="add_user.jsp" method="post">
     <h1 class="h3 mb-3 font-weight-normal">Add new user</h1>
+    <%
+        PreparedStatement psSelectRecord = null;
+        ResultSet rsSelectRecord = null;
+        String sqlSelectRecord = "SELECT * FROM usertypes ";
 
+        assert conn != null;
+        try {
+            psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
 
-<%--    <?php--%>
-<%--    include "../basedados/basedados.h";--%>
-
-<%--    global $conn;--%>
-<%--    $sql = "SELECT * FROM usertypes";--%>
-<%--    $retval = mysqli_query($conn, $sql);--%>
-<%--    if (!$retval) {--%>
-<%--        die('Could not get data: ' . mysqli_error($conn));--%>
-<%--    }--%>
-<%--    if ($_SESSION["type"] == 3) {--%>
-<%--        echo "<select class='custom-select mt-lg-1' name='usertype_select' required autofocus>";--%>
-<%--        echo "<option value='' disabled selected>Choose usertype</option>";--%>
-<%--        while ($row = mysqli_fetch_array($retval)) {--%>
-<%--            echo "<option value='" . $row["ID"] . "'> " . $row["name"] . " </option>";--%>
-<%--        }--%>
-<%--        echo "</select>";--%>
-<%--    }--%>
-<%--    if ($_SESSION["type"] == 2) {--%>
-<%--        echo "<select class='custom-select mt-lg-1' name='usertype_select'>";--%>
-<%--        echo "<option value='1' selected>Client</option>";--%>
-<%--        echo "</select>";--%>
-<%--    }--%>
-<%--    ?>--%>
-
+        try {
+            assert psSelectRecord != null;
+            rsSelectRecord = psSelectRecord.executeQuery();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    %>
+    <select class='custom-select mt-lg-1' name='usertype_select' required autofocus>
+        <option value='' disabled selected>Choose usertype</option>
+        <%
+            while (true) {
+                try {
+                    if (!rsSelectRecord.next()) break;
+        %>
+        <option value='<%=rsSelectRecord.getString("ID")%>'><%=rsSelectRecord.getString("name")%>
+        </option>
+        <%
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        %>
+    </select>
     <input type="text" name="name" class="form-control mt-lg-1" placeholder="Name" required>
     <input type="email" name="email" class="form-control mt-lg-1" placeholder="Email" required>
     <input type="text" name="login" class="form-control mt-lg-1" placeholder="Login" required>
@@ -96,3 +104,6 @@
 </form>
 </body>
 </html>
+<%
+    }
+%>

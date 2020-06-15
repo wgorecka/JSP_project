@@ -1,35 +1,26 @@
-<%--<?php--%>
+<%@ page contentType="text/html; ISO-8859-1" language="java" pageEncoding="UTF-8" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
 
-<%--include "../basedados/basedados.h";--%>
-
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
-
-<%--if (isset($_SESSION["user"]) && isset($_SESSION["type"]) && $_SESSION["type"] == 1) {--%>
-<%--    echo "Error, redirecting to client page.";--%>
-<%--    header('refresh:2; url=client_page.php');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--global $conn;--%>
-<%--if (isset($_SESSION["user"])) {--%>
-<%--    $user_id = $_GET["user_id"];--%>
-<%--    $sql = "UPDATE users SET status='" . -1 . "' WHERE id=" . $user_id;--%>
-<%--    $retval= mysqli_query($conn, $sql);--%>
-<%--    if (!$retval) {--%>
-<%--        die('Could not update data: ' . mysqli_error($conn));--%>
-<%--    }--%>
-<%--    if (mysqli_affected_rows($conn) == 1)--%>
-<%--        echo "User has been successfully deleted.";--%>
-<%--    else--%>
-<%--        echo "Deletion of user failed. Try again later.";--%>
-<%--    if ($_SESSION["type"] == 1) {--%>
-<%--        header('refresh:2; url=client_page.php');--%>
-<%--    } else {--%>
-<%--        header('refresh:2; url=employee_page.jsp');--%>
-<%--    }--%>
-<%--}--%>
-<%--?>--%>
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else if (session.getAttribute("user") != null && session.getAttribute("type") != null && (Integer) session.getAttribute("type") != 2) {
+        out.println("Error, redirecting to client page.");
+        response.setHeader("Refresh", "3;url=client_page.jsp");
+    } else {
+        int user_id = Integer.parseInt(request.getParameter("user_id"));
+        PreparedStatement psInsert;
+        try {
+            String sqlUpdate = "UPDATE users SET status= '-1' WHERE id=" + user_id;
+            psInsert = conn.prepareStatement(sqlUpdate);
+            assert psInsert != null;
+            psInsert.executeUpdate(sqlUpdate);
+            out.println("User has been successfully deleted.");
+        } catch (SQLException ex) {
+            out.println("Deletion of user failed. Try again later.");
+            ex.printStackTrace();
+        }
+        response.setHeader("Refresh", "2;url=users_table.jsp");
+    }
+%>
