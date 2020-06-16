@@ -106,7 +106,7 @@
             </td>
             <td><%=places_left%>
             </td>
-            <td><a href="<%=href%>" class='btn btn-dark'>Buy</a></td>
+            <td><a href="<%=href%>" class='btn btn-dark'>Choose</a></td>
         </tr>
         <%
                         } catch (SQLException throwables) {

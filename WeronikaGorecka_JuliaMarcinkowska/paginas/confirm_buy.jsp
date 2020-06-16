@@ -30,7 +30,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Client page</title>
+    <title>Reservation</title>
     <link rel="stylesheet" href="bootstrap-4.5.0/css/bootstrap.min.css"/>
 
     <style>
@@ -114,11 +114,11 @@
                             <%
                                 if ((Integer) session.getAttribute("type") == 2) {
                             %>
-                            Number of passengers: <input type='number' class = 'my-lg-3' name='pass_no' min='1' max='<%=places_left%>' autofocus required/>
+                            Number of passengers: <input type='number' class = 'w-25' name='pass_no' min='1' max='<%=places_left%>' autofocus required/>
                             <%
                                 } else if (((Integer) session.getAttribute("type") == 1)){
                             %>
-                            <input type='number' name='pass_no' min='1' max='<%=places_left%>' autofocus required/>
+                            <input type='number' class = 'w-25' name='pass_no' min='1' max='<%=places_left%>' autofocus required/>
                             <%
                                 }
                             %>
@@ -129,7 +129,7 @@
                                 if ((Integer) session.getAttribute("type") == 2) {
                                     PreparedStatement psSelectRecord_u = null;
                                     ResultSet rsSelectRecord_u = null;
-                                    String sql_u = "SELECT * FROM users WHERE usertype = 1";
+                                    String sql_u = "SELECT * FROM users WHERE usertype = 1 AND status <> '-1'";
                                     psSelectRecord_u = conn.prepareStatement(sql_u);
                                     assert psSelectRecord_u != null;
                                     rsSelectRecord_u = psSelectRecord_u.executeQuery();
@@ -154,7 +154,7 @@
                             <%
                                 }
                             %>
-                            <input type='submit' class='btn btn-dark mt-lg-1' value='Confirm purchase'/>
+                            <input type='submit' class='btn btn-dark mt-lg-1' value='Confirm reservation'/>
                         </form>
                     </td>
                 </tr>
