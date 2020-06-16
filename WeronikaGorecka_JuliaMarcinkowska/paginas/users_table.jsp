@@ -88,9 +88,6 @@
                         type = "Client";
                         break;
                     case 2:
-                        type = "Employee";
-                        break;
-                    case 3:
                         type = "Admin";
                         break;
                 }

@@ -1,53 +1,50 @@
-<%--<?php--%>
-<%--include "../basedados/basedados.h";--%>
+<%@ page contentType="text/html; ISO-8859-1" language="java" pageEncoding="UTF-8" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
 
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--if (isset($_SESSION["user"]) && isset($_SESSION["type"]) && $_SESSION["type"] == 1) {--%>
-<%--    echo "Error, redirecting to client page.";--%>
-<%--    header('refresh:2; url=client_page.jsp');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["login"]) && isset($_POST["password"])) {--%>
-<%--    $name = $_POST["name"];--%>
-<%--    $email = $_POST["email"];--%>
-<%--    $login = $_POST["login"];--%>
-<%--    $password = $_POST["password"];--%>
-<%--    $type = $_POST["usertype_select"];--%>
-<%--    global $conn;--%>
-<%--    $sql_ch = "SELECT * FROM users WHERE login='" . $login . "'";--%>
-<%--    $result_ch = mysqli_query($conn, $sql_ch);--%>
-<%--    if (mysqli_num_rows($result_ch) != 0) {--%>
-<%--        echo "Adding new user failed, this login already exists, please select another one.";--%>
-<%--        header('refresh:2; url=./add_user_view.php');--%>
-<%--        exit();--%>
-<%--    }--%>
-<%--    if ($type == 1){--%>
-<%--        $sql = "INSERT INTO users (name, email, login, password, usertype) VALUES (" . "'" . $name . "'" . "," . "'" . $email--%>
-<%--            . "'" . "," . "'" . $login . "'" . "," . "'" . $password . "'" . "," . $type . ")";--%>
-<%--    }--%>
-<%--    elseif ($type == 2 || $type == 3 ){--%>
-<%--        $sql = "INSERT INTO users (name, email, login, password, usertype, status) VALUES (" . "'" . $name . "'" . "," . "'" . $email--%>
-<%--            . "'" . "," . "'" . $login . "'" . "," . "'" . $password . "'" . "," . $type . ", '1'" .")";--%>
-<%--    }--%>
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else if (session.getAttribute("user") != null && session.getAttribute("type") != null && (Integer) session.getAttribute("type") != 2) {
+        out.println("Error, redirecting to client page.");
+        response.setHeader("Refresh", "3;url=client_page.jsp");
+    } else {
+        if (request.getParameter("name") != null && request.getParameter("email") != null &&
+                request.getParameter("login") != null && request.getParameter("password") != null) {
+            String name = request.getParameter("name");
+            String email = request.getParameter("email");
+            String login = request.getParameter("login");
+            String password = request.getParameter("password");
+            String usertype = request.getParameter("usertype_select");
 
-<%--    $retval = mysqli_query($conn, $sql);--%>
-<%--    if (!$retval) {--%>
-<%--        die('Could not insert data: ' . mysqli_error($conn));--%>
-<%--    }--%>
-<%--    if (mysqli_affected_rows($conn) == 1)--%>
-<%--        echo "Adding new user successful, please wait for account confirmation.";--%>
-<%--    else--%>
-<%--        echo "Adding new user failed, try again later.";--%>
-<%--    header('refresh:2; url=./employee_page.jsp');--%>
+            PreparedStatement psSelectRecord;
+            PreparedStatement psInsert;
+            ResultSet rsSelectRecord;
+            String sqlSelectRecord = "SELECT * FROM users WHERE login='" + login + "'";
 
-<%--} else {--%>
-<%--    session_destroy();--%>
-<%--    header("refresh:0;url = ./index.html");--%>
-<%--}--%>
+            assert conn != null;
+            try {
+                psSelectRecord = conn.prepareStatement(sqlSelectRecord);
+                assert psSelectRecord != null;
+                rsSelectRecord = psSelectRecord.executeQuery();
+                if (rsSelectRecord.next()) {
+                    out.println("Registration failed, this login already exists, please select another one.");
+                    response.setHeader("Refresh", "3;url=registration.html");
+                } else {
+                    String sqlInsert = "INSERT INTO users (name, email, login, password, usertype, status) VALUES "
+                            + "(" + "'" + name + "'" + "," + "'" + email + "'" + "," + "'" + login + "'" + "," + "'"
+                            + password + "'" + "," + usertype + "," + "1" + ")";
+                    psInsert = conn.prepareStatement(sqlInsert);
+                    assert psInsert != null;
+                    psInsert.executeUpdate(sqlInsert);
+                    out.println("Adding new user successful.");
+                    response.setHeader("Refresh", "3;url=employee_page.jsp");
+                }
 
-<%--?>--%>
+            } catch (SQLException e) {
+                out.println("Adding new user failed, try again later.");
+                e.printStackTrace();
+            }
+        }
+    }
+%>

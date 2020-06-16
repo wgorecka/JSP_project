@@ -11,9 +11,7 @@
         PreparedStatement psInsert;
         ResultSet rsSelectRecord;
 
-
         String sqlSelectRecord = "SELECT * FROM users WHERE login='" + login + "'";
-
 
         assert conn != null;
         try {
