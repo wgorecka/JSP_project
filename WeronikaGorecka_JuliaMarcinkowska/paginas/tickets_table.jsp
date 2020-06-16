@@ -118,7 +118,18 @@
             %>
             <td><%=status%>
             </td>
-
+            <% if (rsSelectRecord.getInt("status") != -1) {
+                String href_cancel = "cancel_reservation.jsp?ticket_id=" + rsSelectRecord.getString("ID");
+            %>
+            <td><a href="<%=href_cancel%>" class='btn btn-dark'>Cancel</a></td>
+            <% }
+                if (rsSelectRecord.getInt("status") == 0) {
+                    String href_confirm = "confirm_ticket.jsp?ticket_id=" + rsSelectRecord.getString("ID");
+            %>
+            <td><a href="<%=href_confirm%>" class='btn btn-dark'>Confirm</a></td>
+            <%
+                }
+            %>
         </tr>
         <%
                             if (!rsSelectRecord.next()) break;

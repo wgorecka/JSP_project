@@ -13,9 +13,9 @@
             psInsert = conn.prepareStatement(sqlUpdate);
             assert psInsert != null;
             psInsert.executeUpdate(sqlUpdate);
-            out.println("Your reservation has been successfully cancelled.");
+            out.println("Reservation has been successfully cancelled.");
         } catch (SQLException ex) {
-            out.println("Cancellation of your reservation failed. Try again later or contact us.");
+            out.println("Cancellation of the reservation failed. Try again later.");
             ex.printStackTrace();
         }
         if ((Integer) session.getAttribute("type") == 1) {

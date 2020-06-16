@@ -1,35 +1,26 @@
-<%--<?php--%>
-<%--include "../basedados/basedados.h";--%>
+<%@ page contentType="text/html; ISO-8859-1" language="java" pageEncoding="UTF-8" import="java.sql.*" %>
+<%@ include file="/WeronikaGorecka_JuliaMarcinkowska/basedados/basedados.jsp" %>
 
-<%--session_start();--%>
-<%--if (!isset($_SESSION["user"]) || !isset($_SESSION["type"]) || $_SESSION["type"] == -1) {--%>
-<%--    echo "Error, you are not logged in, redirecting to main page.";--%>
-<%--    header('refresh:2; url=index.html');--%>
-<%--    exit();--%>
-<%--}--%>
-<%--if (isset($_SESSION["user"]) && isset($_SESSION["type"]) && ($_SESSION["type"] == 2 || $_SESSION["type"] == 1)) {--%>
-<%--    if ($_SESSION["type"] == 2) {--%>
-<%--        echo "Error, redirecting to employee page.";--%>
-<%--        header('refresh:2; url=employee_page.jsp');--%>
-<%--        exit();--%>
-<%--    } else {--%>
-<%--        echo "Error, redirecting to client page.";--%>
-<%--        header('refresh:2; url=client_page.php');--%>
-<%--        exit();--%>
-<%--    }--%>
-<%--}--%>
-<%--global $conn;--%>
-
-<%--$ticket_id = $_GET["ticket_id"];--%>
-<%--$sql_cc = "UPDATE tickets SET status='" . 1 . "' WHERE ID=" . $ticket_id;--%>
-<%--$retval_cc = mysqli_query($conn, $sql_cc);--%>
-<%--if (!$retval_cc) {--%>
-<%--    die('Could not update data: ' . mysqli_error($conn));--%>
-<%--}--%>
-<%--if (mysqli_affected_rows($conn) == 1)--%>
-<%--    echo "Payment for the reservation confirmed.";--%>
-<%--else--%>
-<%--    echo "Confirmation of payment for the reservation failed. Try again later.";--%>
-<%--header('refresh:2; url=tickets_table.jsp');--%>
-
-<%--?>--%>
+<%
+    if (session.getAttribute("user") == null || session.getAttribute("type") == null || (Integer) session.getAttribute("type") == -1) {
+        out.println("Error, you are not logged in, redirecting to main page.");
+        response.setHeader("Refresh", "3;url=index.jsp");
+    } else if (session.getAttribute("user") != null && session.getAttribute("type") != null && (Integer) session.getAttribute("type") != 2) {
+        out.println("Error, redirecting to client page.");
+        response.setHeader("Refresh", "3;url=client_page.jsp");
+    } else {
+        int ticket_id = Integer.parseInt(request.getParameter("ticket_id"));
+        PreparedStatement psInsert;
+        try {
+            String sqlUpdate = "UPDATE tickets SET status= '1' WHERE id=" + ticket_id;
+            psInsert = conn.prepareStatement(sqlUpdate);
+            assert psInsert != null;
+            psInsert.executeUpdate(sqlUpdate);
+            out.println("Payment for the reservation confirmed.");
+        } catch (SQLException ex) {
+            out.println("Confirmation of payment for the reservation failed. Try again later.");
+            ex.printStackTrace();
+        }
+        response.setHeader("Refresh", "2;url=tickets_table.jsp");
+    }
+%>
