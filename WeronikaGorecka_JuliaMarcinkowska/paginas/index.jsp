@@ -18,7 +18,7 @@
 <div class="d-flex bd-highlight m-3">
   <a href="contact_info.html" class="btn btn-lg btn-dark mr-auto">Contact</a>
   <a href="signin.html" class="btn btn-lg btn-dark mr-1">Sign in</a>
-  <a href="registration.html" class="btn btn-lg btn-dark mr-1">Sign up</a>
+  <a href="registration.html" class="btn btn-lg btn-outline-dark mr-1">Sign up</a>
 </div>
 
 <body class="text-center">
