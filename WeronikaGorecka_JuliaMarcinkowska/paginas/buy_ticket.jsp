@@ -6,8 +6,12 @@
         out.println("Error, you are not logged in, redirecting to main page.");
         response.setHeader("Refresh", "3;url=index.jsp");
     } else {
-
-        int user_id = (Integer) session.getAttribute("user");
+        int user_id = 0;
+        if ((Integer) session.getAttribute("type") == 1) {
+            user_id = (Integer) session.getAttribute("user");
+        } else if ((Integer) session.getAttribute("type") == 2) {
+            user_id = Integer.parseInt(request.getParameter("user_select"));
+        }
         String date = request.getParameter("date");
         int course_id = Integer.parseInt(request.getParameter("course_id"));
         int pass_no = Integer.parseInt(request.getParameter("pass_no"));
@@ -19,11 +23,19 @@
             psInsert = conn.prepareStatement(sqlInsert);
             assert psInsert != null;
             psInsert.executeUpdate(sqlInsert);
-            out.println("Reservation successful. You will receive an email with payment information. If we don't receive" +
-                    " payment in 3 working days, your reservation will be canceled.");
+            if ((Integer) session.getAttribute("type") == 1) {
+                out.println("Reservation successful. You will receive an email with payment information. If we don't receive" +
+                        " payment in 3 working days, your reservation will be cancelled.");
+            } else if ((Integer) session.getAttribute("type") == 2) {
+                out.println("Reservation successful. Chosen client will receive an email with payment information.");
+            }
         } catch (SQLException ex) {
             out.println("Reservation failed, try again later or contact us.");
         }
-        response.setHeader("Refresh", "4;url=client_page.jsp");
+        if ((Integer) session.getAttribute("type") == 1) {
+            response.setHeader("Refresh", "4;url=client_page.jsp");
+        } else if ((Integer) session.getAttribute("type") == 2) {
+            response.setHeader("Refresh", "4;url=employee_page.jsp");
+        }
     }
 %>

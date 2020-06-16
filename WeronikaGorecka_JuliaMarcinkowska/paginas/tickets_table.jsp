@@ -143,5 +143,8 @@
         %>
     </table>
 </div>
+<div class="d-flex justify-content-center m-5">
+    <a href='search_bus.jsp' class='btn btn-dark'>Add new reservation</a>
+</div>
 </body>
 </html>
